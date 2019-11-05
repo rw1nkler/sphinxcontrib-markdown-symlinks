@@ -1,5 +1,5 @@
 import logging
-import os, sys
+import os, sys, hashlib, shutil
 from os.path import splitext
 from docutils import nodes
 from sphinx import addnodes
@@ -94,6 +94,13 @@ class MarkdownSymlinksDomain(Domain):
         cls.docs_root_dir = docs_root_dir
         cls.code_root_dir = code_root_dir
 
+        cls.images_rel_path = 'images/_mcs/'
+        cls.images_root_dir = os.path.join(docs_root_dir, cls.images_rel_path)
+
+        if os.path.isdir(cls.images_root_dir):
+            shutil.rmtree(cls.images_root_dir)
+        os.makedirs(cls.images_root_dir, exist_ok=True)
+
     @classmethod
     def relative_code(cls, url):
         """Get a value relative to the code directory."""
@@ -128,6 +135,9 @@ Current Value: {}
             for dname in dirs:
                 dpath = os.path.abspath(os.path.join(root, dname))
 
+                if path_contains(cls.images_root_dir, dpath):
+                    continue
+
                 if not os.path.islink(dpath):
                     continue
 
@@ -147,6 +157,9 @@ Current Value: {}
 
             for fname in files:
                 fpath = os.path.abspath(os.path.join(root, fname))
+
+                if path_contains(cls.images_root_dir, fpath):
+                    continue
 
                 if not os.path.islink(fpath):
                     continue
@@ -200,6 +213,58 @@ Current Value: {}
 
 
 class LinkParser(parser.CommonMarkParser, object):
+    def visit_image(self, mdnode):
+        img_node = nodes.image()
+        img_md_path = mdnode.destination
+
+        document_path = self.document.attributes['source']
+        url_check = urlparse(img_md_path)
+        if os.path.islink(document_path) and not url_check.scheme:
+
+            # Find the path of the document with link to the img
+            real_document_path = os.path.realpath(document_path)
+            real_document_dir = os.path.dirname(real_document_path) + '/'
+
+            # Find the path to image and image extension
+            real_img_path = os.path.normpath(os.path.join(real_document_dir, img_md_path))
+            _, img_ext = splitext(img_md_path)
+
+            # Find SHA1 of the image
+            hasher = hashlib.sha1()
+            with open(real_img_path, 'rb') as image_file:
+                buf = image_file.read()
+                hasher.update(buf)
+
+            # Link image to the docs with name changed to SHA1
+            link_name = hasher.hexdigest() + img_ext
+            link_path = os.path.join(MarkdownSymlinksDomain.images_root_dir, link_name)
+            document_dir = os.path.dirname(document_path)
+            rel_path = os.path.relpath(link_path, document_dir)
+            try:
+                os.symlink(real_img_path, link_path)
+            except FileExistsError:
+                pass
+
+            # Change the img link if the img was found in a linked md file
+            img_node['uri'] = rel_path
+
+        else:
+            # When md file was an ordinary file do not change the link
+            img_node['uri'] = img_md_path
+
+        if mdnode.first_child and mdnode.first_child.literal:
+            content = [mdnode.first_child.literal]
+            n = mdnode.first_child
+            mdnode.first_child.literal = ''
+            mdnode.first_child = mdnode.last_child = None
+            while getattr(n, 'nxt'):
+                n.nxt, n = None, n.nxt
+                content.append(n.literal)
+            img_node['alt'] = ''.join(content)
+
+        self.current_node.append(img_node)
+        self.current_node = img_node
+
     def visit_link(self, mdnode):
         ref_node = nodes.reference()
 
