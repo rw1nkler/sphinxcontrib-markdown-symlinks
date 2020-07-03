@@ -66,7 +66,6 @@ html_static_path = ['_static']
 
 # -- Print Used Python Packages -----------------------------------------------
 
-print("\n### ---------- List of Used Python Packages ---------- ###\n\n")
 subprocess.run("pip3 list --format=columns", shell=True)
 print("----------------------------------------------------------\n")
 
