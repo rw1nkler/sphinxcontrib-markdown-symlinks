@@ -10,7 +10,7 @@ stages:
 
 jobs:
   - stage: Tests
-    name: "Build Test"
+    name: "Build Tests"
     script:
       - cd tests/docs
       - make html
@@ -29,16 +29,16 @@ jobs:
       - pip3 install sphinx==3.0
       - make TEST=int_link_test linkcheck
 
-  - stage: Tests
-    name: "Sphinx < 3.0 External Link Test"
-    script:
-      - cd tests/docs
-      - pip3 install sphinx==2.4
-      - make TEST=ext_link_test linkcheck
+  # - stage: Tests
+  #   name: "Sphinx < 3.0 External Link Test"
+  #   script:
+  #     - cd tests/docs
+  #     - pip3 install sphinx==2.4
+  #     - make TEST=ext_link_test linkcheck
 
-  - stage: Tests
-    name: "Sphinx >= 3.0 External Link Test"
-    script:
-      - cd tests/docs
-      - pip3 install sphinx==3.0
-      - make TEST=ext_link_test linkcheck
+  # - stage: Tests
+  #   name: "Sphinx >= 3.0 External Link Test"
+  #   script:
+  #     - cd tests/docs
+  #     - pip3 install sphinx==3.0
+  #     - make TEST=ext_link_test linkcheck
