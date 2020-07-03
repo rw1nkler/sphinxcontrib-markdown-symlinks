@@ -5,7 +5,18 @@ install:
   - pip install -r tests/docs/requirements.txt
   - python3 setup.py install
 
-script:
-  - cd tests/docs
-  - make html
-  - make linkcheck
+stages:
+  - name: Build
+  - name: Tests
+
+jobs:
+  - stage: Build
+    name: "Build Test Documentation"
+    script:
+      - cd tests/docs
+      - make html
+  - stage: Tests
+    name: "Link Test"
+    script:
+      - pwd
+      - make linkcheck
