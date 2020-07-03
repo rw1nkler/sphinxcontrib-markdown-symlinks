@@ -14,8 +14,31 @@ jobs:
     script:
       - cd tests/docs
       - make html
+
   - stage: Tests
-    name: "Link Test"
+    name: "Sphinx < 3.0 Internal Link Test"
     script:
       - cd tests/docs
-      - make linkcheck
+      - pip3 install sphinx==2.4
+      - make TEST=int_link_test linkcheck
+
+  - stage: Tests
+    name: "Sphinx >= 3.0 Internal Link Test"
+    script:
+      - cd tests/docs
+      - pip3 install sphinx==3.0
+      - make TEST=int_link_test linkcheck
+
+  - stage: Tests
+    name: "Sphinx < 3.0 External Link Test"
+    script:
+      - cd tests/docs
+      - pip3 install sphinx==2.4
+      - make TEST=ext_link_test linkcheck
+
+  - stage: Tests
+    name: "Sphinx >= 3.0 External Link Test"
+    script:
+      - cd tests/docs
+      - pip3 install sphinx==3.0
+      - make TEST=ext_link_test linkcheck
