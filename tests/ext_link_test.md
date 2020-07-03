@@ -8,4 +8,4 @@ the link inside this file to the Github URL.
 If this link works in the Sphinx documentation, the Markdown Symlinks
 extension correctly resolved the link reference:
 
-[Link to the file](file.md)
+[Link to the file](test_files/file.md)
