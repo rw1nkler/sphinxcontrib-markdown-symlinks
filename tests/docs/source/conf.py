@@ -23,8 +23,8 @@ copyright = '2020, author'
 author = 'author'
 
 # The full version, including alpha/beta/rc tags
-release = '3.0'
-
+release = '1.0'
+needs_sphinx = '3.0'
 
 # -- General configuration ---------------------------------------------------
 
