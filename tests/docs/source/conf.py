@@ -12,6 +12,8 @@
 #
 import os
 import subprocess
+import sphinx
+import packaging.version
 from markdown_code_symlinks import LinkParser, MarkdownSymlinksDomain
 
 # import sys
@@ -25,16 +27,27 @@ author = 'author'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0'
-needs_sphinx = '3.0'
 
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'recommonmark'
-]
+
+#if "TEST_FILE" in os.environ:
+#    master_doc = os.environ["TEST_FILE"]
+#    print("Using {} test file...".format(master_doc))
+#else:
+
+master_doc='index'
+
+sphinx_v3_0 = packaging.version.parse("3.0.0")
+sphinx_v = packaging.version.parse(sphinx.__version__)
+
+if sphinx_v >= sphinx_v3_0:
+    extensions = ['recommonmark']
+else:
+    extensions = []
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -43,14 +56,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-
-# --- Other configuration options --------------------------------------------
-
-source_parsers = {
-    '.md': 'markdown_code_symlinks.LinkParser',
-}
-
-source_suffix = ['.rst', '.md']
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -64,12 +69,38 @@ html_theme = 'alabaster'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# -- Tests --------------------------------------------------------------------
+
+if "TEST" in os.environ:
+    all_files = [f for f in os.listdir() if os.path.isfile(f)]
+    test_name = os.environ["TEST"]
+
+    if test_name == 'int_link_test':
+        master_doc = 'int_link_test'
+        used_files = ['int_link_test.md']
+    elif test_name == 'ext_link_test':
+        master_doc = 'ext_link_test'
+        used_files = [
+            'ext_link_test.md',
+            'int_file.md'
+        ]
+    else:
+        assert False, "Unsupported test name"
+
+    exclude_patterns = [x for x in all_files if x not in used_files]
+
 # -- Print Used Python Packages -----------------------------------------------
 
 subprocess.run("pip3 list --format=columns", shell=True)
 print("----------------------------------------------------------\n")
 
 # -- Markdown Symlinks Setup --------------------------------------------------
+
+source_parsers = {
+    '.md': 'markdown_code_symlinks.LinkParser',
+}
+
+source_suffix = ['.rst', '.md']
 
 def setup(app):
     github_code_repo = 'https://github.com/rw1nkler/sphinxcontrib-markdown-symlinks/'
