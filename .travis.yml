@@ -9,4 +9,3 @@ script:
   - cd tests/docs
   - make html
   - make linkcheck
-
