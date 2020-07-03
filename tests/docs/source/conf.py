@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import subprocess
 from markdown_code_symlinks import LinkParser, MarkdownSymlinksDomain
 
 # import sys
@@ -63,6 +64,11 @@ html_theme = 'alabaster'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# -- Print Used Python Packages -----------------------------------------------
+
+print("\n### ---------- List of Used Python Packages ---------- ###\n\n")
+subprocess.run("pip3 list --format=columns", shell=True)
+print("----------------------------------------------------------\n")
 
 # -- Markdown Symlinks Setup --------------------------------------------------
 
