@@ -4,26 +4,17 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- Path setup --------------------------------------------------------------
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
 import os
 import subprocess
 import sphinx
 import packaging.version
 from markdown_code_symlinks import LinkParser, MarkdownSymlinksDomain
 
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
 # -- Project information -----------------------------------------------------
 
 project = 'Markdown Symlinks Tests'
-copyright = '2020, author'
-author = 'author'
+copyright = '2020, SymbiFlow Authors'
+author = 'SymbiFlow Authors'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0'
@@ -34,12 +25,7 @@ release = '1.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 
-#if "TEST_FILE" in os.environ:
-#    master_doc = os.environ["TEST_FILE"]
-#    print("Using {} test file...".format(master_doc))
-#else:
-
-master_doc='index'
+master_doc = 'index'
 
 sphinx_v3_0 = packaging.version.parse("3.0.0")
 sphinx_v = packaging.version.parse(sphinx.__version__)
@@ -102,9 +88,10 @@ source_parsers = {
 
 source_suffix = ['.rst', '.md']
 
+
 def setup(app):
-    github_code_repo = 'https://github.com/rw1nkler/sphinxcontrib-markdown-symlinks/'
     github_code_branch = 'blob/fix_links/'
+    github_code_repo = 'https://github.com/SymbiFlow/sphinxcontrib-markdown-symlinks/'
 
     docs_root_dir = os.path.realpath(os.path.dirname(__file__))
     code_root_dir = os.path.realpath(os.path.join(docs_root_dir, "..", ".."))
